@@ -1,0 +1,30 @@
+<library path="lib/libuwds_basic_clients">
+  <class name="uwds_basic_clients/ArObjectsProvider"
+         type="uwds_basic_clients::ArObjectsProvider"
+         base_class_type="nodelet::Nodelet">
+    <description>This is the AR objects provider based on ar_track_alvar_msgs</description>
+  </class>
+  <class name="uwds_basic_clients/SimpleObjectProvider"
+         type="uwds_basic_clients::SimpleObjectProvider"
+         base_class_type="nodelet::Nodelet">
+    <description>This is a simple object provider based on jsk_recognition_msgs</description>
+  </class>
+  <class name="uwds_basic_clients/EnvProvider"
+         type="uwds_basic_clients::EnvProvider"
+         base_class_type="nodelet::Nodelet">
+    <description>This is the Underworlds static environment provider</description>
+  </class>
+
+  <class name="uwds_basic_clients/SceneViewer"
+         type="uwds_basic_clients::SceneViewer"
+         base_class_type="nodelet::Nodelet">
+    <description>This is the Underworlds scene visualizer</description>
+  </class>
+
+  <class name="uwds_basic_clients/WorldMerger"
+         type="uwds_basic_clients::WorldMerger"
+         base_class_type="nodelet::Nodelet">
+    <description>This is the Underworlds world merger</description>
+  </class>
+
+</library>

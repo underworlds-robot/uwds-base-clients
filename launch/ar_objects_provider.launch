@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="output" default="screen"/>
+  <arg name="respawn" default="false"/>
+  <arg name="start_manager" default="true"/>
+  <arg name="start_server" default="false"/>
+  <arg name="nodelet_manager" default="ar_object_nodelet_manager"/>
+  <arg name="launch-prefix" default=""/>
+
+  <arg name="publish_on_changes" default="false"/>
+  <arg name="global_frame_id" default="map"/>
+  <arg name="ressources_folder" default="$(find laas_objects)/res"/>
+  <arg name="marker_ids" default="10 11"/>
+  <arg name="marker_names" default="green_bin blue_bin"/>
+  <arg name="input_frame" default="CameraTop_optical_frame"/>
+  <arg name="input_image_topic" default="/naoqi_driver_node/camera/front/image_rect_color"/>
+	<arg name="input_camera_info_topic" default="/naoqi_driver_node/camera/front/camera_info"/>
+
+  <node name="$(arg nodelet_manager)"
+        pkg="nodelet" type="nodelet"
+        args="manager"
+        respawn="$(arg respawn)"
+        output="$(arg output)"
+        launch-prefix="$(arg launch-prefix)"
+        if="$(arg start_manager)"/>
+
+  <node name="uwds_server"
+        pkg="nodelet" type="nodelet"
+        args="load uwds/UwdsServerNodelet $(arg nodelet_manager)"
+        respawn="$(arg respawn)"
+        output="$(arg output)"
+        launch-prefix="$(arg launch-prefix)"
+        if="$(arg start_server)"/>
+
+  <node name="ar_objects_provider"
+        pkg="nodelet" type="nodelet"
+        args="load uwds_basic_clients/ArObjectsProvider $(arg nodelet_manager)"
+        output="$(arg output)"
+        launch-prefix="$(arg launch-prefix)">
+    <rosparam subst_value="true">
+      global_frame_id: $(arg global_frame_id)
+      marker_ids: $(arg marker_ids)
+      marker_names: $(arg marker_names)
+      ressources_folder: $(arg ressources_folder)
+      input_frame: $(arg input_frame)
+    </rosparam>
+  </node>
+
+</launch>

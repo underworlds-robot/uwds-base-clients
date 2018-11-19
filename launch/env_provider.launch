@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="output" default="screen"/>
+  <arg name="respawn" default="false"/>
+  <arg name="start_manager" default="true"/>
+  <arg name="start_server" default="false"/>
+  <arg name="nodelet_manager" default="env_provider_nodelet_manager"/>
+  <arg name="launch-prefix" default=""/>
+
+  <arg name="output_world" default="env"/>
+  <arg name="filename" default="$(find uwds_tutorials)/res/blend/adream.blend"/>
+  <arg name="scale" default="1.0"/>
+  <arg name="global_frame_id" default="map"/>
+
+  <node name="$(arg nodelet_manager)"
+        pkg="nodelet" type="nodelet"
+        args="manager"
+        respawn="$(arg respawn)"
+        output="$(arg output)"
+        launch-prefix="$(arg launch-prefix)"
+        if="$(arg start_manager)"/>
+
+  <node name="uwds_server"
+        pkg="nodelet" type="nodelet"
+        args="load uwds/UwdsServerNodelet $(arg nodelet_manager)"
+        respawn="$(arg respawn)"
+        output="$(arg output)"
+        launch-prefix="$(arg launch-prefix)"
+        if="$(arg start_server)"/>
+
+  <node name="env_provider2"
+        pkg="nodelet" type="nodelet"
+        args="load uwds_basic_clients/EnvProvider $(arg nodelet_manager)"
+        respawn="$(arg respawn)"
+        output="$(arg output)"
+        launch-prefix="$(arg launch-prefix)">
+    <rosparam subst_value="true">
+      filename: $(arg filename)
+      output_world: $(arg output_world)
+      scale: $(arg scale)
+    </rosparam>
+  </node>
+</launch>
