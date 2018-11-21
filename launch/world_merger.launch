@@ -7,7 +7,7 @@
   <arg name="nodelet_manager" default="world_merger_nodelet_manager"/>
   <arg name="launch-prefix" default=""/>
 
-  <arg name="default_input_worlds" default="env ar_objects simple_object"/>
+  <arg name="default_inputs" default="env ar_objects simple_object"/>
   <arg name="output_world" default="merged"/>
 
   <node name="$(arg nodelet_manager)"
@@ -32,7 +32,7 @@
         output="$(arg output)"
         launch-prefix="$(arg launch-prefix)">
     <rosparam subst_value="true">
-      default_input_worlds: $(arg default_input_worlds)
+      default_inputs: $(arg default_inputs)
       ouput_world: $(arg output_world)
     </rosparam>
   </node>

@@ -8,7 +8,7 @@
   <arg name="launch-prefix" default=""/>
 
   <arg name="output_world" default="env"/>
-  <arg name="filename" default="$(find uwds_tutorials)/res/blend/adream.blend"/>
+  <arg name="filename" default="$(find laas_objects)/res/blend/adream_empty.blend"/>
   <arg name="scale" default="1.0"/>
   <arg name="global_frame_id" default="map"/>
 
