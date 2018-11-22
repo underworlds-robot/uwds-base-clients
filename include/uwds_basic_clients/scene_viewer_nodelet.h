@@ -115,7 +115,7 @@ namespace uwds_basic_clients
       /** @brief
        * The global frame id.
        */
-      std::string global_frame_id_;
+      //std::string global_frame_id_;
 
       /** @brief
        * The last marker ID used.
