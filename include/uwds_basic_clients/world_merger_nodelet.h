@@ -63,7 +63,6 @@ namespace uwds_basic_clients
 
     virtual void onReconfigure(const std::vector<std::string>& worlds);
 
-    std::string output_world_;
   };
 }
 

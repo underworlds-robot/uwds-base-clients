@@ -80,10 +80,10 @@ namespace uwds_basic_clients
         object_node_.position.pose.position.y = t.getY();
         object_node_.position.pose.position.z = t.getZ();
 
-        object_node_.position.pose.orientation.x = q.getX();
-        object_node_.position.pose.orientation.y = q.getY();
-        object_node_.position.pose.orientation.z = q.getZ();
-        object_node_.position.pose.orientation.w = q.getW();
+        object_node_.position.pose.orientation.x = 0.0;
+        object_node_.position.pose.orientation.y = 0.0;
+        object_node_.position.pose.orientation.z = 0.0;
+        object_node_.position.pose.orientation.w = 1.0;
 
         object_node_.last_observation.data = msg->header.stamp;
         if (!use_mesh_)

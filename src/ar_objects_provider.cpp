@@ -84,6 +84,7 @@ namespace uwds_basic_clients
         {
           marker_node_[marker.id].position.pose = marker.pose.pose;
           Node node = marker_node_[marker.id];
+          node.last_observation.data = ros::Time::now();
           if(!meshes_ever_send_.count(marker.id))
           {
             for (const auto& meshes_pair : marker_meshes_)

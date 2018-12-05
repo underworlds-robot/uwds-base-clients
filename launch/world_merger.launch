@@ -2,11 +2,13 @@
 <launch>
   <arg name="output" default="screen"/>
   <arg name="respawn" default="false"/>
-  <arg name="start_manager" default="true"/>
+  <arg name="start_manager" default="false"/>
   <arg name="start_server" default="false"/>
-  <arg name="nodelet_manager" default="world_merger_nodelet_manager"/>
+  <arg name="nodelet_manager" default="uwds_nodelet_manager"/>
   <arg name="launch-prefix" default=""/>
 
+  <arg name="name" default="world_merger"/>
+  <arg name="global_frame_id" default="map"/>
   <arg name="default_inputs" default="env ar_objects simple_object"/>
   <arg name="output_world" default="merged"/>
 
@@ -26,14 +28,15 @@
         launch-prefix="$(arg launch-prefix)"
         if="$(arg start_server)"/>
 
-  <node name="world_merger"
+  <node name="$(arg name)"
         pkg="nodelet" type="nodelet"
         args="load uwds_basic_clients/WorldMerger $(arg nodelet_manager)"
         output="$(arg output)"
         launch-prefix="$(arg launch-prefix)">
     <rosparam subst_value="true">
+      global_frame_id: $(arg global_frame_id)
       default_inputs: $(arg default_inputs)
-      ouput_world: $(arg output_world)
+      output_world: $(arg output_world)
     </rosparam>
   </node>
 

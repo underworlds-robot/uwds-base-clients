@@ -2,11 +2,12 @@
 <launch>
   <arg name="output" default="screen"/>
   <arg name="respawn" default="false"/>
-  <arg name="start_manager" default="true"/>
+  <arg name="start_manager" default="false"/>
   <arg name="start_server" default="false"/>
-  <arg name="nodelet_manager" default="simple_object_nodelet_manager"/>
+  <arg name="nodelet_manager" default="uwds_nodelet_manager"/>
   <arg name="launch-prefix" default=""/>
 
+  <arg name="name" default="simple_object_provider"/>
   <arg name="input" default="color_detection"/>
   <arg name="object_name" default="orange_cup"/>
   <arg name="object_model" default="$(find laas_objects)/res/blend/orange_cup.blend"/>
@@ -29,7 +30,7 @@
         launch-prefix="$(arg launch-prefix)"
         if="$(arg start_server)"/>
 
-  <node name="simple_object_provider"
+  <node name="$(arg name)"
         pkg="nodelet" type="nodelet"
         args="load uwds_basic_clients/SimpleObjectProvider $(arg nodelet_manager)"
         output="$(arg output)"

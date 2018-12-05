@@ -4,7 +4,6 @@ namespace uwds_basic_clients
 {
   void WorldMerger::onInit()
   {
-    ros::param::param<std::string>("~output_world", output_world_, "merged");
     uwds::ReconfigurableClient::onInit();
   }
 
@@ -28,8 +27,8 @@ namespace uwds_basic_clients
   }
 
   void WorldMerger::onChanges(const std::string& world,
-                         const std_msgs::Header& header,
-                         const Invalidations& invalidations)
+                              const std_msgs::Header& header,
+                              const Invalidations& invalidations)
   {
     auto& scene = worlds()[world].scene();
     auto& timeline = worlds()[world].timeline();
@@ -51,46 +50,10 @@ namespace uwds_basic_clients
       changes.meshes_to_update.push_back(meshes[id]);
     }
     sendWorldChanges(output_world_, header, changes);
+    if(verbose_)NODELET_INFO("[%s::onChanges] Send changes to world <%s>", nodelet_name_.c_str(), output_world_.c_str());
   }
 
-  void WorldMerger::onReconfigure(const std::vector<std::string>& new_input_worlds)
-  {
-    Changes changes;
-
-    for(const std::string& world : new_input_worlds)
-    {
-      std::vector<std::string> mesh_ids;
-      auto& scene = worlds()[world].scene();
-      std::queue<Node> fifo;
-      fifo.push(scene.nodes()[scene.rootID()]);
-      do
-      {
-        Node current_node = fifo.front();
-        fifo.pop();
-        if(current_node.name !="root")
-          changes.nodes_to_update.push_back(current_node);
-        for (const auto& child_id : current_node.children)
-        {
-          fifo.push(scene.nodes()[child_id]);
-        }
-      } while (!fifo.empty());
-
-      for(const auto situation : worlds()[world].timeline().situations())
-      {
-        changes.situations_to_update.push_back(*situation);
-      }
-      for(const auto mesh_id : mesh_ids)
-      {
-        changes.meshes_to_update.push_back(worlds()[world].meshes()[mesh_id]);
-      }
-    }
-
-    std_msgs::Header header;
-    header.stamp = ros::Time::now();
-    sendWorldChanges(output_world_,
-                     header,
-                     changes);
-  }
+  void WorldMerger::onReconfigure(const std::vector<std::string>& new_input_worlds) {}
 }
 
 #include <pluginlib/class_list_macros.h>

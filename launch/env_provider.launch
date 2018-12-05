@@ -2,9 +2,9 @@
 <launch>
   <arg name="output" default="screen"/>
   <arg name="respawn" default="false"/>
-  <arg name="start_manager" default="true"/>
+  <arg name="start_manager" default="false"/>
   <arg name="start_server" default="false"/>
-  <arg name="nodelet_manager" default="env_provider_nodelet_manager"/>
+  <arg name="nodelet_manager" default="uwds_nodelet_manager"/>
   <arg name="launch-prefix" default=""/>
 
   <arg name="output_world" default="env"/>
