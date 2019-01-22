@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   jsk_recognition_msgs
+  jsk_rviz_plugins
   ar_track_alvar_msgs
 )
 

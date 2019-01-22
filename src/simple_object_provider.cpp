@@ -100,6 +100,7 @@ namespace uwds_basic_clients
           changes.meshes_to_update = object_meshes_;
           meshes_ever_send_ = true;
         }
+        worlds()[output_world_].applyChanges(msg->header, changes);
         sendWorldChanges(output_world_, msg->header, changes);
       }
       catch (tf::TransformException &ex) {

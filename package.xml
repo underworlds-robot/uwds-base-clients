@@ -43,6 +43,7 @@
   <depend>uwds</depend>
   <depend>ar_track_alvar_msgs</depend>
   <depend>jsk_recognition_msgs</depend>
+  <depend>jsk_rviz_plugins</depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
