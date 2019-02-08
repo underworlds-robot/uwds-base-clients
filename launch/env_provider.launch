@@ -38,6 +38,7 @@
       filename: $(arg filename)
       output_world: $(arg output_world)
       scale: $(arg scale)
+      verbose : false
     </rosparam>
   </node>
 </launch>

@@ -41,6 +41,7 @@
       object_name: $(arg object_name)
       object_model: $(arg object_model)
       output_world: $(arg output_world)
+      verbose : false
     </rosparam>
   </node>
 

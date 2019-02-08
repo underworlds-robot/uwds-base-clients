@@ -1,4 +1,5 @@
 #include "uwds_basic_clients/simple_object_provider.h"
+#include <stdlib.h>
 
 namespace uwds_basic_clients
 {
@@ -76,6 +77,23 @@ namespace uwds_basic_clients
 
         tf::Vector3 t = transform.getOrigin();
         tf::Quaternion q = transform.getRotation();
+
+        float deltaX = abs(t.getX() - object_node_.position.pose.position.x);
+        float deltaY = abs(t.getY() - object_node_.position.pose.position.y);
+        float deltaZ = abs(t.getZ() - object_node_.position.pose.position.z);
+        float deltaT = abs(msg->header.stamp.toSec() - object_node_.last_observation.data.toSec());
+        
+        if(deltaX != 0.0 && deltaY != 0.0 && deltaZ != 0.0 && deltaT != 0.0)
+        {
+          object_node_.velocity.twist.linear.x = deltaX / deltaT;
+          object_node_.velocity.twist.linear.y = deltaY / deltaT;
+          object_node_.velocity.twist.linear.z = deltaZ / deltaT;
+        } else {
+          object_node_.velocity.twist.linear.x = NAN;
+          object_node_.velocity.twist.linear.y = NAN;
+          object_node_.velocity.twist.linear.z = NAN;
+        }
+
         object_node_.position.pose.position.x = t.getX();
         object_node_.position.pose.position.y = t.getY();
         object_node_.position.pose.position.z = t.getZ();

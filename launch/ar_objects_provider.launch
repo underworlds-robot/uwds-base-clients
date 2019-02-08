@@ -43,6 +43,7 @@
       marker_names: $(arg marker_names)
       ressources_folder: $(arg ressources_folder)
       input_frame: $(arg input_frame)
+      verbose : false
     </rosparam>
   </node>
 

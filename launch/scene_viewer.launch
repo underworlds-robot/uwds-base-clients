@@ -36,6 +36,7 @@
       global_frame_id: $(arg global_frame_id)
       publish_on_changes: $(arg publish_on_changes)
       default_inputs: $(arg default_inputs)
+      verbose : false
     </rosparam>
   </node>
 

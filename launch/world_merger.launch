@@ -37,6 +37,7 @@
       global_frame_id: $(arg global_frame_id)
       default_inputs: $(arg default_inputs)
       output_world: $(arg output_world)
+      verbose : false
     </rosparam>
   </node>
 
