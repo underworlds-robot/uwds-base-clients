@@ -78,16 +78,48 @@ namespace uwds_basic_clients
         tf::Vector3 t = transform.getOrigin();
         tf::Quaternion q = transform.getRotation();
 
-        float deltaX = abs(t.getX() - object_node_.position.pose.position.x);
-        float deltaY = abs(t.getY() - object_node_.position.pose.position.y);
-        float deltaZ = abs(t.getZ() - object_node_.position.pose.position.z);
-        float deltaT = abs(msg->header.stamp.toSec() - object_node_.last_observation.data.toSec());
-        
-        if(deltaX != 0.0 && deltaY != 0.0 && deltaZ != 0.0 && deltaT != 0.0)
+        ros::Time now = ros::Time::now();
+        double deltaX = t.getX() - object_node_.position.pose.position.x;
+        double deltaY = t.getY() - object_node_.position.pose.position.y;
+        double deltaZ = t.getZ() - object_node_.position.pose.position.z;
+        double deltaT;
+
+        if (object_node_.last_observation.data.toSec()!= 0.0)
         {
-          object_node_.velocity.twist.linear.x = deltaX / deltaT;
-          object_node_.velocity.twist.linear.y = deltaY / deltaT;
-          object_node_.velocity.twist.linear.z = deltaZ / deltaT;
+          if(now.toSec() <= object_node_.last_observation.data.toSec())
+            return;
+          //deltaT = msg->header.stamp.toSec() - object_node_.last_observation.data.toSec();
+          deltaT = now.toSec() - object_node_.last_observation.data.toSec();
+        }
+        else {
+          deltaT = 0.0;
+        }
+
+        // NODELET_WARN("%s delatT is : %f = %f - %f", output_world_.c_str(), deltaT, msg->header.stamp.toSec(), object_node_.last_observation.data.toSec());
+        // NODELET_WARN("%s delatX is : %f", output_world_.c_str(), deltaX);
+        // NODELET_WARN("%s delatY is : %f", output_world_.c_str(), deltaY);
+        // NODELET_WARN("%s delatZ is : %f", output_world_.c_str(), deltaZ);
+
+        if(deltaT != 0.0)
+        {
+          if(deltaX != 0.0)
+          {
+            object_node_.velocity.twist.linear.x = deltaX / deltaT;
+          } else {
+            object_node_.velocity.twist.linear.x = 0.0;
+          }
+          if(deltaY != 0.0)
+          {
+            object_node_.velocity.twist.linear.y = deltaY / deltaT;
+          } else {
+            object_node_.velocity.twist.linear.y = 0.0;
+          }
+          if(deltaZ != 0.0)
+          {
+            object_node_.velocity.twist.linear.z = deltaZ / deltaT;
+          } else {
+            object_node_.velocity.twist.linear.z = 0.0;
+          }
         } else {
           object_node_.velocity.twist.linear.x = NAN;
           object_node_.velocity.twist.linear.y = NAN;
@@ -103,7 +135,9 @@ namespace uwds_basic_clients
         object_node_.position.pose.orientation.z = 0.0;
         object_node_.position.pose.orientation.w = 1.0;
 
-        object_node_.last_observation.data = msg->header.stamp;
+        //object_node_.last_observation.data = msg->header.stamp;
+        object_node_.last_observation.data = now;
+
         if (!use_mesh_)
         {
           for (auto& property : object_node_.properties)
