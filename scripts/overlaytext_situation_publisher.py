@@ -46,17 +46,23 @@ class OverlaytextSituationPublisher(ReconfigurableClient):
         """
         """
         situations_text = "   *** facts ***\n\r"
+        fact_sorted = {}
         for situation_id, situation in self.worlds[world_name].timeline.situations.items():
             if situation.end.data == rospy.Time(0):
-                situations_text += situation.description + "\n\r"
+                fact_sorted[situation.start.data] = situation
+
+        for key in sorted(fact_sorted.iterkeys()):
+            situations_text += fact_sorted[key].description + "\n\r"
+
         situations_text += "   *** events ***\n\r"
-        sit_sorted = {}
+        event_sorted = {}
         for situation_id, situation in self.worlds[world_name].timeline.situations.items():
             if situation.start.data == situation.end.data:
-                sit_sorted[situation.start.data] = situation
+                event_sorted[situation.start.data] = situation
 
-        for key in sorted(sit_sorted.iterkeys()):
-                situations_text += sit_sorted[key].description + "\n\r"
+        for key in sorted(event_sorted.iterkeys()):
+                situations_text += event_sorted[key].description + "\n\r"
+
         text = OverlayText()
         text.width = 400
         text.height = 600
