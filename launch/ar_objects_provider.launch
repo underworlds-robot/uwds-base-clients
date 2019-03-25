@@ -9,6 +9,7 @@
 
   <arg name="publish_on_changes" default="false"/>
   <arg name="global_frame_id" default="map"/>
+  <arg name="output_world" default="ar_objects"/>
   <arg name="ressources_folder" default="$(find laas_objects)/res"/>
   <arg name="marker_ids" default="10 11"/>
   <arg name="marker_names" default="green_bin blue_bin"/>
@@ -43,6 +44,7 @@
       marker_names: $(arg marker_names)
       ressources_folder: $(arg ressources_folder)
       input_frame: $(arg input_frame)
+      output_world: $(arg output_world)
       verbose : false
     </rosparam>
   </node>

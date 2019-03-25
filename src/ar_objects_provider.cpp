@@ -5,11 +5,12 @@ namespace uwds_basic_clients
   void ArObjectsProvider::onInit()
   {
     UwdsClientNodelet::onInit();
+    pnh_->param<std::string>("output_world", output_world_, "ar_objects");
     std::string marker_ids;
     std::vector<std::string> marker_ids_list;
     if(!pnh_->getParam("marker_ids", marker_ids))
     {
-      NODELET_ERROR("[%s] Error occured : Need to specify the marker ids parameter", nodelet_name_.c_str());
+      NODELET_ERROR("[%s] Error occured : Need to specify the marker ids parameter", ctx_->name().c_str());
       return;
     }
     boost::split(marker_ids_list, marker_ids, boost::is_any_of(" "), boost::token_compress_on);
@@ -18,19 +19,19 @@ namespace uwds_basic_clients
     std::vector<std::string> marker_names_list;
     if(!pnh_->getParam("marker_names", marker_names))
     {
-      NODELET_ERROR("[%s] Error occured : Need to specify the marker names parameter", nodelet_name_.c_str());
+      NODELET_ERROR("[%s] Error occured : Need to specify the marker names parameter", ctx_->name().c_str());
       return;
     }
     boost::split(marker_names_list, marker_names, boost::is_any_of(" "), boost::token_compress_on);
     if(marker_names_list.size() != marker_names_list.size())
     {
-      NODELET_ERROR("[%s] Error occured : Parameters marker_ids and marker_names need to have the same size", nodelet_name_.c_str());
+      NODELET_ERROR("[%s] Error occured : Parameters marker_ids and marker_names need to have the same size", ctx_->name().c_str());
       return;
     }
     std::string ressources_folder;
     if(!pnh_->getParam("ressources_folder", ressources_folder))
     {
-      NODELET_ERROR("[%s] Error occured : Need to specify the ressource folder parameter", nodelet_name_.c_str());
+      NODELET_ERROR("[%s] Error occured : Need to specify the ressource folder parameter", ctx_->name().c_str());
       return;
     }
     std::vector<double> scale;
@@ -49,10 +50,9 @@ namespace uwds_basic_clients
       mesh_property.name = "meshes";
       uwds_msgs::Property aabb_property;
       aabb_property.name = "aabb";
-
-      if(ModelLoader().loadMeshes(ressources_folder+"/blend/"+marker_names_list[i]+".blend", scale, meshes_imported, aabb))
+      if(ctx_->worlds()[output_world_].pushMeshesFrom3DFile(ressources_folder+"/blend/"+marker_names_list[i]+".blend", meshes_imported, aabb))
       {
-        NODELET_INFO("[%s] Mesh '%s' loaded", nodelet_name_.c_str(), (ressources_folder+"/blend/"+marker_names_list[i]+".blend").c_str());
+        NODELET_INFO("[%s] Mesh '%s' loaded", ctx_->name().c_str(), (ressources_folder+"/blend/"+marker_names_list[i]+".blend").c_str());
         for (unsigned int j = 0; j < meshes_imported.size(); j++)
         {
           mesh_property.data += meshes_imported[j].id;
@@ -67,10 +67,8 @@ namespace uwds_basic_clients
       marker_node_.emplace(atoi(marker_ids_list[i].c_str()), new_node);
       marker_meshes_.emplace(atoi(marker_ids_list[i].c_str()), meshes_imported);
     }
-    pnh_->param<std::string>("output_world", output_world_, "ar_objects");
     pnh_->param<std::string>("input_frame", input_frame_, "camera");
     input_subscriber_ = nh_->subscribe("ar_pose_marker", 1, &ArObjectsProvider::callback, this);
-    connection_status_ = CONNECTED;
   }
 
   void ArObjectsProvider::callback(const ar_track_alvar_msgs::AlvarMarkersConstPtr& msg)
@@ -97,7 +95,7 @@ namespace uwds_basic_clients
           changes.nodes_to_update.push_back(node);
         }
       }
-      sendWorldChanges(output_world_, msg->markers[0].header, changes);
+      ctx_->worlds()[output_world_].update(msg->markers[0].header, changes);
     }
   }
 }

@@ -37,7 +37,7 @@ namespace uwds_basic_clients
         }
         aabb_property.data = (boost::format("%f,%f,%f") % aabb[0] % aabb[1] % aabb[2]).str();
       } else {
-        NODELET_ERROR("[%s] Error while loading file '%s'", nodelet_name_.c_str(), object_model.c_str());
+        NODELET_ERROR("[%s] Error while loading file '%s'", ctx_->name().c_str(), object_model.c_str());
         return;
       }
     }
@@ -49,7 +49,6 @@ namespace uwds_basic_clients
     pnh_->param<std::string>("output_world", output_world_, "simple_object");
     pnh_->param<std::string>("global_frame_id", global_frame_id_, "map");
     input_subscriber_ = pnh_->subscribe("input", 1, &SimpleObjectProvider::callback, this);
-    connection_status_ = CONNECTED;
   }
 
   void SimpleObjectProvider::callback(const jsk_recognition_msgs::BoundingBoxConstPtr& msg)
@@ -152,11 +151,10 @@ namespace uwds_basic_clients
           changes.meshes_to_update = object_meshes_;
           meshes_ever_send_ = true;
         }
-        worlds()[output_world_].applyChanges(msg->header, changes);
-        sendWorldChanges(output_world_, msg->header, changes);
+        ctx_->worlds()[output_world_].update(msg->header, changes);
       }
       catch (tf::TransformException &ex) {
-        NODELET_WARN("[%s] Exception occured : %s",nodelet_name_.c_str(), ex.what());
+        NODELET_WARN("[%s] Exception occured : %s",ctx_->name().c_str(), ex.what());
       }
     }
   }

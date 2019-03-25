@@ -17,6 +17,8 @@ class OverlaytextSituationPublisher(ReconfigurableClient):
         self.text_pub = rospy.Publisher('situations_overlay', OverlayText, queue_size=1)
         ReconfigurableClient.__init__(self, "overlaytext_situation_publisher", READER)
 
+        rospy.Timer(rospy.Duration(1/30.0), self.handleTimer)
+
     def onReconfigure(self, worlds_names):
         """
         """
@@ -39,29 +41,47 @@ class OverlaytextSituationPublisher(ReconfigurableClient):
     def onChanges(self, world_name, header, invalidations):
         """
         """
-        if len(invalidations.situation_ids_updated) > 0:
-            self.publishOverlaytext(world_name, header, invalidations)
+        pass
+        #if len(invalidations.situation_ids_updated) > 0:
+        #    self.publishOverlaytext(world_name, header, invalidations)
 
-    def publishOverlaytext(self, world_name, header, invalidations):
+    def handleTimer(self, event):
+        self.publishOverlaytext(self.input_worlds[0])
+
+    def publishOverlaytext(self, world_name):
         """
         """
-        situations_text = "   *** facts ***\n\r"
+        situations_text = "   FACTS\n\r"
+        situations_text += "id : description\n\r"
+        situations_text += "----------------\n\r"
         fact_sorted = {}
+        fact_desc = {}
         for situation_id, situation in self.worlds[world_name].timeline.situations.items():
-            if situation.end.data == rospy.Time(0):
-                fact_sorted[situation.start.data] = situation
+            if situation.end.data != situation.start.data:
+                if situation.end.data == rospy.Time(0):
+                    if situation.description not in fact_desc:
+                        fact_sorted[situation.start.data] = situation
+                        fact_desc[situation.description] = situation
+                else:
+                    if rospy.Time.now() - situation.end.data < rospy.Duration(5.0):
+                        if situation.description not in fact_desc:
+                            fact_sorted[situation.start.data] = situation
+                            fact_desc[situation.description] = situation
 
         for key in sorted(fact_sorted.iterkeys()):
-            situations_text += fact_sorted[key].description + "\n\r"
+            situations_text += fact_sorted[key].id[:5]+" : "+fact_sorted[key].description +"\n\r"
 
-        situations_text += "   *** events ***\n\r"
+        situations_text += "\n\rEVENTS\n\r"
+        situations_text += "id : description\n\r"
+        situations_text += "----------------\n\r"
         event_sorted = {}
         for situation_id, situation in self.worlds[world_name].timeline.situations.items():
             if situation.start.data == situation.end.data:
-                event_sorted[situation.start.data] = situation
+                if rospy.Time.now() - situation.end.data < rospy.Duration(5.0):
+                    event_sorted[situation.start.data] = situation
 
         for key in sorted(event_sorted.iterkeys()):
-                situations_text += event_sorted[key].description + "\n\r"
+                situations_text += event_sorted[key].id[:5]+" : "+event_sorted[key].description +"\n\r"
 
         text = OverlayText()
         text.width = 400

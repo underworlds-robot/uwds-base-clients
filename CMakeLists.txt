@@ -129,8 +129,6 @@ include_directories(
 ## Declare a C++ library
 add_library(${PROJECT_NAME}
    src/world_merger_nodelet.cpp
-   src/env_provider_nodelet.cpp
-   src/scene_viewer_nodelet.cpp
    src/ar_objects_provider.cpp
    src/simple_object_provider.cpp
 )
