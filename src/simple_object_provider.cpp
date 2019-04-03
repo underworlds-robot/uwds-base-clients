@@ -35,7 +35,7 @@ namespace uwds_basic_clients
             meshes_property.data += ",";
           }
         }
-        aabb_property.data = (boost::format("%f,%f,%f") % aabb[0] % aabb[1] % aabb[2]).str();
+        aabb_property.data = to_string(aabb[0]) + "," + to_string(aabb[1]) + "," + to_string(aabb[2]);
       } else {
         NODELET_ERROR("[%s] Error while loading file '%s'", ctx_->name().c_str(), object_model.c_str());
         return;
@@ -94,11 +94,6 @@ namespace uwds_basic_clients
           deltaT = 0.0;
         }
 
-        // NODELET_WARN("%s delatT is : %f = %f - %f", output_world_.c_str(), deltaT, msg->header.stamp.toSec(), object_node_.last_observation.data.toSec());
-        // NODELET_WARN("%s delatX is : %f", output_world_.c_str(), deltaX);
-        // NODELET_WARN("%s delatY is : %f", output_world_.c_str(), deltaY);
-        // NODELET_WARN("%s delatZ is : %f", output_world_.c_str(), deltaZ);
-
         if(deltaT != 0.0)
         {
           if(deltaX != 0.0)
@@ -134,7 +129,6 @@ namespace uwds_basic_clients
         object_node_.position.pose.orientation.z = 0.0;
         object_node_.position.pose.orientation.w = 1.0;
 
-        //object_node_.last_observation.data = msg->header.stamp;
         object_node_.last_observation.data = now;
 
         if (!use_mesh_)
@@ -142,7 +136,7 @@ namespace uwds_basic_clients
           for (auto& property : object_node_.properties)
           {
             if (property.name == "aabb")
-              property.data = (boost::format("%f,%f,%f") % msg->dimensions.x % msg->dimensions.y % msg->dimensions.z).str();
+              property.data = to_string(msg->dimensions.x) + "," + to_string(msg->dimensions.y) + "," + to_string(msg->dimensions.z);
           }
         }
         changes.nodes_to_update.push_back(object_node_);

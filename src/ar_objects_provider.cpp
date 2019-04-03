@@ -59,7 +59,7 @@ namespace uwds_basic_clients
           if (j<meshes_imported.size()-1)
             mesh_property.data += ",";
         }
-        aabb_property.data = (boost::format("%f,%f,%f") % aabb[0] % aabb[1] % aabb[2]).str();
+        aabb_property.data = to_string(aabb[0]) + "," + to_string(aabb[1]) + "," + to_string(aabb[2]);
         new_node.properties.push_back(mesh_property);
         new_node.properties.push_back(aabb_property);
         new_node.type = MESH;
