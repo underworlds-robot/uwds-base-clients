@@ -44,6 +44,8 @@ namespace uwds_basic_clients
 
       bool use_mesh_ = false;
 
+      string object_class_;
+
       bool meshes_ever_send_ = false;
 
       std::string global_frame_id_;

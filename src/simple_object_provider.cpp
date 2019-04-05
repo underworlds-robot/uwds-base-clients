@@ -11,9 +11,12 @@ namespace uwds_basic_clients
     meshes_property.name = "meshes";
     Property aabb_property;
     aabb_property.name = "aabb";
+    Property class_property;
+    class_property.name = "class";
 
     pnh_->param<std::string>("object_name", object_name_, "unknown");
-
+    pnh_->param<std::string>("object_class", object_class_, "Artifact");
+    class_property.data = object_class_;
     std::string object_model;
     pnh_->param<std::string>("object_model", object_model, "");
     if (object_model != "")
@@ -46,6 +49,7 @@ namespace uwds_basic_clients
     object_node_.type = MESH;
     object_node_.properties.push_back(meshes_property);
     object_node_.properties.push_back(aabb_property);
+    object_node_.properties.push_back(class_property);
     pnh_->param<std::string>("output_world", output_world_, "simple_object");
     pnh_->param<std::string>("global_frame_id", global_frame_id_, "map");
     input_subscriber_ = pnh_->subscribe("input", 1, &SimpleObjectProvider::callback, this);

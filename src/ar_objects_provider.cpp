@@ -1,13 +1,16 @@
 #include "uwds_basic_clients/ar_objects_provider.h"
 
+using namespace std;
+using namespace uwds_msgs;
+
 namespace uwds_basic_clients
 {
   void ArObjectsProvider::onInit()
   {
     UwdsClientNodelet::onInit();
-    pnh_->param<std::string>("output_world", output_world_, "ar_objects");
-    std::string marker_ids;
-    std::vector<std::string> marker_ids_list;
+    pnh_->param<string>("output_world", output_world_, "ar_objects");
+    string marker_ids;
+    vector<string> marker_ids_list;
     if(!pnh_->getParam("marker_ids", marker_ids))
     {
       NODELET_ERROR("[%s] Error occured : Need to specify the marker ids parameter", ctx_->name().c_str());
@@ -15,8 +18,8 @@ namespace uwds_basic_clients
     }
     boost::split(marker_ids_list, marker_ids, boost::is_any_of(" "), boost::token_compress_on);
 
-    std::string marker_names;
-    std::vector<std::string> marker_names_list;
+    string marker_names;
+    vector<string> marker_names_list;
     if(!pnh_->getParam("marker_names", marker_names))
     {
       NODELET_ERROR("[%s] Error occured : Need to specify the marker names parameter", ctx_->name().c_str());
@@ -28,28 +31,31 @@ namespace uwds_basic_clients
       NODELET_ERROR("[%s] Error occured : Parameters marker_ids and marker_names need to have the same size", ctx_->name().c_str());
       return;
     }
-    std::string ressources_folder;
+    string ressources_folder;
     if(!pnh_->getParam("ressources_folder", ressources_folder))
     {
       NODELET_ERROR("[%s] Error occured : Need to specify the ressource folder parameter", ctx_->name().c_str());
       return;
     }
-    std::vector<double> scale;
+    vector<double> scale;
     scale.push_back(1.0);
     scale.push_back(1.0);
     scale.push_back(1.0);
-    std::vector<uwds_msgs::Node> nodes_imported;
+    vector<Node> nodes_imported;
     for(unsigned int i = 0; i< marker_ids_list.size(); i++)
     {
-      std::vector<uwds_msgs::Mesh> meshes_imported;
+      vector<Mesh> meshes_imported;
       Node new_node;
       new_node.name = marker_names_list[i];
       new_node.id = NEW_UUID;
-      std::vector<double> aabb;
-      uwds_msgs::Property mesh_property;
+      vector<double> aabb;
+      Property mesh_property;
       mesh_property.name = "meshes";
-      uwds_msgs::Property aabb_property;
+      Property aabb_property;
       aabb_property.name = "aabb";
+      Property class_property;
+      class_property.name = "class";
+      class_property.data = "Artifact";
       if(ctx_->worlds()[output_world_].pushMeshesFrom3DFile(ressources_folder+"/blend/"+marker_names_list[i]+".blend", meshes_imported, aabb))
       {
         NODELET_INFO("[%s] Mesh '%s' loaded", ctx_->name().c_str(), (ressources_folder+"/blend/"+marker_names_list[i]+".blend").c_str());
@@ -62,12 +68,13 @@ namespace uwds_basic_clients
         aabb_property.data = to_string(aabb[0]) + "," + to_string(aabb[1]) + "," + to_string(aabb[2]);
         new_node.properties.push_back(mesh_property);
         new_node.properties.push_back(aabb_property);
+        new_node.properties.push_back(class_property);
         new_node.type = MESH;
       }
       marker_node_.emplace(atoi(marker_ids_list[i].c_str()), new_node);
       marker_meshes_.emplace(atoi(marker_ids_list[i].c_str()), meshes_imported);
     }
-    pnh_->param<std::string>("input_frame", input_frame_, "camera");
+    pnh_->param<string>("input_frame", input_frame_, "camera");
     input_subscriber_ = nh_->subscribe("ar_pose_marker", 1, &ArObjectsProvider::callback, this);
   }
 
